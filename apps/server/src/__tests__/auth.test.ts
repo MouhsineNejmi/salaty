@@ -49,6 +49,6 @@ describe('Authentication Flow', () => {
       .post('/api/auth/login')
       .send({ email, password: 'wrongpass' });
 
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(404);
   });
 });

@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import { authRouter } from './routes/auth.routes';
 import { userRouter } from './routes/user.routes';
@@ -10,6 +11,7 @@ import { NotFoundError } from './errors';
 const app = express();
 
 app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
+app.use(cookieParser());
 app.use(express.json());
 
 // Routes
