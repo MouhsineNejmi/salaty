@@ -9,6 +9,27 @@ import { generateFaviconUrl, generateLogoUrl, slugify } from '../utils';
 
 const router = express.Router();
 
+router.get(
+  '/',
+  requireAuth,
+  async (req: Request, res: Response, next: NextFunction) => {
+    const ownerId = req.user?.id;
+
+    try {
+      if (!ownerId)
+        throw new UnauthorizedError(
+          'You must be logged in order to see your stores!'
+        );
+
+      const stores = await StoreService.getStoresByOwnerId(ownerId);
+
+      res.status(200).json(stores);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 router.post(
   '/',
   requireAuth,

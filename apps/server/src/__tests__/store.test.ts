@@ -4,6 +4,22 @@ import { db } from '../config/db';
 import { createAuthenticatedAgent } from './utils/createAuthenticatedAgent';
 
 describe('Store API', () => {
+  it('should return all stores for the authenticated user', async () => {
+    const agent = await createAuthenticatedAgent();
+    const res = await agent.get('/api/stores');
+
+    expect(res.status).toBe(200);
+    expect(res.body[0]).toHaveProperty('id');
+    expect(res.body[0]).toHaveProperty('name');
+    expect(res.body[0]).toHaveProperty('slug');
+  });
+
+  it('should return 401 if not authenticated', async () => {
+    const res = await request(app).get('/api/stores');
+
+    expect(res.status).toBe(401);
+  });
+
   const validStore = {
     name: 'My Test Store',
     slug: 'my-test-store',
