@@ -5,13 +5,26 @@ describe('Authentication Flow', () => {
   const email = 'test@example.com';
   const password = '12345678';
 
+  let cookies = '';
+
   it('it should return JWT after signup', async () => {
     const res = await request(app)
       .post('/api/auth/signup')
       .send({ email, password });
 
-    expect(res.status).toBe(200);
-    expect(res.body.token).toBeDefined();
+    expect(res.status).toBe(201);
+    expect(res.body.user.email).toBe(email);
+
+    const setCookie = res.headers['set-cookie'];
+    expect(setCookie).toBeDefined();
+
+    const cookieString = Array.isArray(setCookie)
+      ? setCookie.join('; ')
+      : setCookie;
+    expect(cookieString).toContain('access_token');
+    expect(cookieString).toContain('refresh_token');
+
+    cookies = setCookie;
   });
 
   it('it should return JWT login', async () => {
@@ -19,20 +32,24 @@ describe('Authentication Flow', () => {
       .post('/api/auth/login')
       .send({ email, password });
 
+    const setCookie = res.headers['set-cookie'];
+
+    expect(setCookie).toBeDefined();
+
+    const cookieString = Array.isArray(setCookie)
+      ? setCookie.join('; ')
+      : setCookie;
+
+    expect(cookieString).toContain('access_token');
+    expect(cookieString).toContain('refresh_token');
+
+    cookies = setCookie;
+
     expect(res.status).toBe(200);
-    expect(res.body.token).toBeDefined();
   });
 
-  it('/api/users/me should returns current user', async () => {
-    const login = await request(app)
-      .post('/api/auth/login')
-      .send({ email, password });
-
-    const token = login.body.token;
-
-    const res = await request(app)
-      .get('/api/users/me')
-      .set('Authorization', `Bearer ${token}`);
+  it('/api/users/me should returns current user with cookies', async () => {
+    const res = await request(app).get('/api/users/me').set('Cookie', cookies);
 
     expect(res.status).toBe(200);
     expect(res.body.user.email).toBe(email);

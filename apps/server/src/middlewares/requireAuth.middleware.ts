@@ -7,13 +7,17 @@ export const requireAuth = (
   _res: Response,
   next: NextFunction
 ) => {
-  const header = req.headers.authorization;
-  if (!header || !header.startsWith('Bearer ')) {
-    return next(new UnauthorizedError('No token provided'));
+  const token = req.cookies.access_token;
+
+  if (!token) {
+    return next(new UnauthorizedError('Access token missing'));
   }
 
-  const token = header.split(' ')[1];
-  const payload = verifyToken(token);
-  (req as any).userId = payload.userId;
-  next();
+  try {
+    const payload = verifyToken(token);
+    (req as any).userId = payload.id;
+    next();
+  } catch (err) {
+    return next(new UnauthorizedError('Invalid or expired token'));
+  }
 };
