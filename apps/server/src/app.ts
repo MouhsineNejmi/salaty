@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 
 import { authRouter } from './routes/auth.routes';
 import { userRouter } from './routes/user.routes';
+import { storesRouter } from './routes/store.routes';
 
 import { errorHandler } from './middlewares/error.middleware';
 import { NotFoundError } from './errors';
@@ -17,6 +18,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
+app.use('/api/stores', storesRouter);
 
 app.all(/(.*)/, (req, res, next) => {
   next(new NotFoundError(`Route ${req.originalUrl} not found`));
