@@ -5,7 +5,7 @@ import { ConflictError, UnauthorizedError } from '../errors';
 import { StoreService } from '../services/store.service';
 import { validate } from '../middlewares/validate.middleware';
 import { requireAuth } from '../middlewares/requireAuth.middleware';
-import { slugify } from '../utils';
+import { generateFaviconUrl, generateLogoUrl, slugify } from '../utils';
 
 const router = express.Router();
 
@@ -23,12 +23,17 @@ router.post(
           'Unauthorized to create the store! You are not logged in.'
         );
 
+      const logo = req.body.logo || generateLogoUrl(name);
+      const favicon = req.body.favicon || generateFaviconUrl(slug);
+
       const store = await StoreService.createStore({
         name,
         slug: slugify(slug),
         description,
         currency,
         ownerId,
+        logo,
+        favicon,
       });
 
       return res.status(201).json(store);
