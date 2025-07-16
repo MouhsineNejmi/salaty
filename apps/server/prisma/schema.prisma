@@ -15,5 +15,79 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  stores Store[]
+
   @@map("users")
+}
+
+model Store {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  logo        String?
+  favicon     String?
+  description Json?
+  ownerId     String
+  currency    String  @default("MAD")
+
+  owner     User      @relation(fields: [ownerId], references: [id])
+  products  Product[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("stores")
+}
+
+model Product {
+  id              String  @id @default(cuid())
+  title           String
+  slug            String  @unique
+  description     String?
+  price           Decimal @db.Decimal(10, 2)
+  comparedAtPrice Decimal @db.Decimal(10, 2)
+  stock           Int
+  sku             String  @unique
+  images          Json // Array of image URLs
+  isPublished     Boolean @default(false)
+  storeId         String
+  categoryId      String
+  seoTitle        String?
+  seoDescription  String?
+
+  store    Store     @relation(fields: [storeId], references: [id])
+  category Category  @relation(fields: [categoryId], references: [id])
+  variants Variant[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("products")
+}
+
+model Variant {
+  id              String   @id @default(cuid())
+  productId       String
+  name            String
+  value           String
+  sku             String?  @unique
+  price           Decimal  @db.Decimal(10, 2)
+  comparedAtPrice Decimal  @db.Decimal(10, 2)
+  stock           Int
+  product         Product  @relation(fields: [productId], references: [id])
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("variants")
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  products Product[]
+
+  @@map("categories")
 }
