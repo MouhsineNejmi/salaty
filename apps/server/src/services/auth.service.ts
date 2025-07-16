@@ -78,10 +78,7 @@ export class AuthService {
 
     try {
       const payload = verifyToken(token);
-
       this.sendAuthCookies(res, { id: payload.id, email: payload.email });
-
-      return res.status(200).json({ message: 'Access token refreshed' });
     } catch (err) {
       throw new ForbiddenError('Invalid refresh token');
     }

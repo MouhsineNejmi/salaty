@@ -33,13 +33,13 @@ export async function api<T>(
     }
   }
 
-  const json = await res.json();
+  const data = await res.json();
 
   if (!res.ok) {
     throw new Error(
-      json.errors?.[0]?.message || json.message || 'Unexpected error'
+      data.errors?.[0]?.message || data.message || 'Unexpected error'
     );
   }
 
-  return json;
+  return data;
 }

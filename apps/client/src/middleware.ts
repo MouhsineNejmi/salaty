@@ -4,7 +4,7 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get('access_token')?.value;
 
   const isAuth = !!token;
-  const isProtected = req.nextUrl.pathname.startsWith('/dashboard');
+  const isProtected = req.nextUrl.pathname.startsWith('/stores');
 
   if (isProtected && !isAuth) {
     const loginUrl = new URL('/login', req.url);
@@ -16,5 +16,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/stores/:path*'],
 };

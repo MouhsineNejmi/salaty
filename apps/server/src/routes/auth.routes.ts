@@ -32,7 +32,8 @@ router.post(
 );
 
 router.post('/auth/refresh', (req: Request, res: Response) => {
-  return AuthService.refresh(req, res);
+  AuthService.refresh(req, res);
+  return res.json({ message: 'Access Token Refreshed Successfully!' });
 });
 
 router.post('/logout', (req: Request, res: Response) => {

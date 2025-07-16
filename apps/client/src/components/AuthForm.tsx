@@ -6,12 +6,22 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import Link from 'next/link';
+import { SignupSchema, LoginSchema } from '@salaty/shared';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import { Alert, AlertTitle } from '@/components/ui/alert';
+
 import { login, signup } from '@/lib/api/auth';
-import { SignupSchema, LoginSchema } from '@salaty/shared';
 
 type Mode = 'login' | 'signup';
 
@@ -44,12 +54,10 @@ export function AuthForm({ mode }: AuthFormProps) {
         await signup(data);
       }
 
-      console.log('CLICKED!!!!!');
-
       toast(`✅ ${mode.toUpperCase()} Success`, {
         position: 'top-center',
       });
-      router.push('/dashboard');
+      router.push('/stores');
     } catch (err: any) {
       setError(err.message || 'Unexpected error occurred');
     } finally {
@@ -58,49 +66,84 @@ export function AuthForm({ mode }: AuthFormProps) {
   }
 
   return (
-    <form
-      onSubmit={form.handleSubmit(onSubmit)}
-      className='space-y-4 max-w-md mx-auto'
-    >
-      <h2 className='text-2xl font-semibold text-center capitalize'>{mode}</h2>
+    <Card>
+      <CardHeader className='text-center'>
+        <CardTitle className='text-xl'>Welcome back</CardTitle>
+        <CardDescription>
+          Enter your email and password below to{' '}
+          {mode === 'login' ? 'login to your account' : 'create your account'}
+        </CardDescription>
+      </CardHeader>
 
-      {error && (
-        <Alert variant='destructive'>
-          <AlertTitle>{error}</AlertTitle>
-        </Alert>
-      )}
+      <CardContent>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className='space-y-4 max-w-md mx-auto'
+        >
+          {error && (
+            <Alert variant='destructive'>
+              <AlertTitle>{error}</AlertTitle>
+            </Alert>
+          )}
 
-      <div>
-        <Input
-          placeholder='Email'
-          {...form.register('email')}
-          type='email'
-          autoComplete='email'
-        />
-        {form.formState.errors.email && (
-          <p className='text-sm text-red-500 mt-1'>
-            {form.formState.errors.email.message}
-          </p>
-        )}
-      </div>
+          <div className='grid gap-6'>
+            <div className='grid gap-3'>
+              <Label htmlFor='email'>Email</Label>
+              <Input
+                id='email'
+                type='email'
+                placeholder='m@example.com'
+                {...form.register('email')}
+              />
+              {form.formState.errors.email && (
+                <p className='text-sm text-red-500 mt-1'>
+                  {form.formState.errors.email.message}
+                </p>
+              )}
+            </div>
 
-      <div>
-        <Input
-          placeholder='Password'
-          {...form.register('password')}
-          type='password'
-          autoComplete='current-password'
-        />
-        {form.formState.errors.password && (
-          <p className='text-sm text-red-500 mt-1'>
-            {form.formState.errors.password.message}
-          </p>
-        )}
-      </div>
+            <div className='grid gap-3'>
+              <div className='flex items-center'>
+                <Label htmlFor='password'>Password</Label>
+                {mode === 'login' && (
+                  <a
+                    href='#'
+                    className='ml-auto text-sm underline-offset-4 hover:underline'
+                  >
+                    Forgot your password?
+                  </a>
+                )}
+              </div>
 
-      <Button type='submit' className='w-full' disabled={loading}>
-        {loading ? 'Loading...' : mode === 'login' ? 'Login' : 'Sign Up'}
-      </Button>
-    </form>
+              <Input
+                placeholder='******'
+                {...form.register('password')}
+                type='password'
+                autoComplete='current-password'
+              />
+              {form.formState.errors.password && (
+                <p className='text-sm text-red-500 mt-1'>
+                  {form.formState.errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <Button type='submit' className='w-full' disabled={loading}>
+              {loading ? 'Loading...' : mode === 'login' ? 'Login' : 'Sign Up'}
+            </Button>
+
+            <div className='text-center text-sm'>
+              Don&apos;t have an account?{' '}
+              <Link
+                href={mode === 'login' ? 'signup' : 'login'}
+                className='underline underline-offset-4'
+              >
+                {mode === 'login' ? 'Sign up' : 'Login'}
+              </Link>
+            </div>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

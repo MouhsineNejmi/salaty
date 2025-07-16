@@ -4,6 +4,7 @@ import './globals.css';
 
 import { AuthProvider } from '@/contexts/AuthContext';
 import { Toaster } from '@/components/ui/sonner';
+import { Providers } from './providers';
 
 const poppins = Poppins({
   variable: '--font-poppins',
@@ -22,9 +23,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
+    <html lang='en' className='dark'>
       <body className={`${poppins.variable} antialiased`}>
-        <AuthProvider>{children}</AuthProvider>
+        <Providers>
+          <AuthProvider>{children}</AuthProvider>
+        </Providers>
         <Toaster />
       </body>
     </html>

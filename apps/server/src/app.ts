@@ -11,9 +11,15 @@ import { NotFoundError } from './errors';
 
 const app = express();
 
-app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 app.use(cookieParser());
 app.use(express.json());
+app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
+
+app.use((req, res, next) => {
+  console.log('Raw Headers:', req.headers);
+  console.log('Cookies Header:', req.headers.cookie);
+  next();
+});
 
 // Routes
 app.use('/api/auth', authRouter);
