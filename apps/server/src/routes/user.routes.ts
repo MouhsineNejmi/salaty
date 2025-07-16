@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/me', requireAuth, async (req, res, next) => {
   try {
-    const user = await UserService.getCurrentUser((req as any).userId);
+    const user = await UserService.getCurrentUser(req.user?.id);
 
     res.json({ user });
   } catch (err) {
